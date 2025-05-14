@@ -12,28 +12,28 @@ app.use((0, cors_1.default)());
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: "http://localhost:3000",
     },
 });
 // Type-safe Maps for rooms and users
 const rooms = new Map(); // roomId -> set of socket IDs
 const users = new Map(); // socket ID -> roomId
-io.on('connection', (socket) => {
-    console.log('a user connected', socket.id);
-    socket.on('join', ({ roomId }) => {
+io.on("connection", (socket) => {
+    console.log("a user connected", socket.id);
+    socket.on("join", ({ roomId }) => {
         if (!rooms.has(roomId)) {
             rooms.set(roomId, new Set());
         }
         const room = rooms.get(roomId);
         if (room.size >= 2) {
-            socket.emit('room_full');
+            socket.emit("room_full");
             return;
         }
         room.add(socket.id);
         users.set(socket.id, roomId);
         console.log(`User ${socket.id} joined room ${roomId}`);
     });
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
         const roomId = users.get(socket.id);
         if (roomId) {
             const room = rooms.get(roomId);
@@ -41,13 +41,14 @@ io.on('connection', (socket) => {
                 room.delete(socket.id);
                 if (room.size === 0) {
                     rooms.delete(roomId);
+                    console.log("room deleted");
                 }
             }
             users.delete(socket.id);
         }
-        console.log('User disconnected', socket.id);
+        console.log("User disconnected", socket.id);
     });
-    socket.on('localDescription', ({ description }) => {
+    socket.on("localDescription", ({ description }) => {
         const roomId = users.get(socket.id);
         if (!roomId)
             return;
@@ -56,11 +57,11 @@ io.on('connection', (socket) => {
             return;
         for (const userId of room) {
             if (userId !== socket.id) {
-                io.to(userId).emit('localDescription', { description });
+                io.to(userId).emit("localDescription", { description });
             }
         }
     });
-    socket.on('remoteDescription', ({ description }) => {
+    socket.on("remoteDescription", ({ description }) => {
         const roomId = users.get(socket.id);
         if (!roomId)
             return;
@@ -69,11 +70,11 @@ io.on('connection', (socket) => {
             return;
         for (const userId of room) {
             if (userId !== socket.id) {
-                io.to(userId).emit('remoteDescription', { description });
+                io.to(userId).emit("remoteDescription", { description });
             }
         }
     });
-    socket.on('iceCandidate', ({ candidate }) => {
+    socket.on("iceCandidate", ({ candidate }) => {
         const roomId = users.get(socket.id);
         if (!roomId)
             return;
@@ -82,11 +83,11 @@ io.on('connection', (socket) => {
             return;
         for (const userId of room) {
             if (userId !== socket.id) {
-                io.to(userId).emit('iceCandidate', { candidate });
+                io.to(userId).emit("iceCandidate", { candidate });
             }
         }
     });
-    socket.on('iceCandidateReply', ({ candidate }) => {
+    socket.on("iceCandidateReply", ({ candidate }) => {
         const roomId = users.get(socket.id);
         if (!roomId)
             return;
@@ -95,11 +96,11 @@ io.on('connection', (socket) => {
             return;
         for (const userId of room) {
             if (userId !== socket.id) {
-                io.to(userId).emit('iceCandidateReply', { candidate });
+                io.to(userId).emit("iceCandidateReply", { candidate });
             }
         }
     });
 });
 server.listen(1234, () => {
-    console.log('Server listening on port 1234');
+    console.log("Server listening on port 1234");
 });
