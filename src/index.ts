@@ -5,17 +5,15 @@ import cors from "cors";
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:3000", "https://rekor.vercel.app"],
-  credentials: true
+  origin: "*"
 }));
 const server = http.createServer(app);
 
 // enabled cors for all routes for now to be changed in prod
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://rekor.vercel.app"],
-    methods: ["GET", "POST"],
-    credentials: true
+    origin: "*",
+    methods: ["GET", "POST"]
   },
 });
 // Type-safe Maps for rooms and users
