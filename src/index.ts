@@ -8,23 +8,10 @@ app.use(cors());
 
 const server = http.createServer(app);
 
+// enabled cors for all routes for now to be changed in prod
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      console.log('Origin attempting to connect:', origin);
-      const allowedOrigins = ["http://localhost:3000", "https://rekor.vercel.app"];
-      
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ["GET", "POST"],
-    credentials: true
+    origin: "*"
   },
 });
 // Type-safe Maps for rooms and users
