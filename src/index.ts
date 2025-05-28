@@ -10,10 +10,23 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin:[ "http://localhost:3000","https://rekor.vercel.app"]
+    origin: (origin, callback) => {
+      console.log('Origin attempting to connect:', origin);
+      const allowedOrigins = ["http://localhost:3000", "https://rekor.vercel.app"];
+      
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ["GET", "POST"],
+    credentials: true
   },
 });
-
 // Type-safe Maps for rooms and users
 const rooms = new Map<string, Set<string>>(); // roomId -> set of socket IDs
 const users = new Map<string, string>(); // socket ID -> roomId
