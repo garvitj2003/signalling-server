@@ -4,14 +4,18 @@ import { Server } from "socket.io";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
-
+app.use(cors({
+  origin: ["http://localhost:3000", "https://rekor.vercel.app"],
+  credentials: true
+}));
 const server = http.createServer(app);
 
 // enabled cors for all routes for now to be changed in prod
 const io = new Server(server, {
   cors: {
-    origin: "*"
+    origin: ["http://localhost:3000", "https://rekor.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true
   },
 });
 // Type-safe Maps for rooms and users
